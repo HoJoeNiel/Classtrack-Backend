@@ -35,9 +35,12 @@ Backend repo for our ClassTrack project
 - Luis
 - Darren
 
-Testing & Error Handling:
--- Luis
+### Testing & Error Handling:
+- Writing unit tests with pytest
+- Handling errors properly (e.g., 404 for missing resources, 401 for unauthorized access)
 
+#### Delegation
+- Luis
 
 ## Example Project Structure
 
