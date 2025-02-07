@@ -23,9 +23,15 @@ Use **feature branches** to avoid breaking the `main` branch.
 
 - `main` → Stable, production-ready branch
 - `dev` → Main working branch for development
-- Feature branches:
+
   **_Below are examples only_**
-  **_Yours will depend on the name of the feature you're working on_** - `feature-auth` → Authentication system - `feature-users` → User-related endpoints - `feature-db` → Database setup
+
+  **_Yours will depend on the name of the feature you're working on_**
+
+- Feature branches:
+- `feature-auth` → Authentication system
+- `feature-users` → User-related endpoints
+- `feature-db` → Database setup
 
 Each developer works **only on their feature branch**.
 
