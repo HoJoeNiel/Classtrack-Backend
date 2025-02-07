@@ -1,54 +1,132 @@
+
 # Classtrack-Backend
 Backend repo for our ClassTrack project
 
-# Respo# Classtrack-Backend
-Backend repo for our ClassTrack project
+## Responsibilities:
 
-# Responsibilities:
+### Authentication:
+-   User registration (`POST /register`)
+-   Login & token generation (`POST /login`)
+-   Logout (`POST /logout`)
+-   Password hashing & JWT authentication
 
-Authentication:
--Register: Luis
--Login: Darren
--LogOut: Luis
+#### Delegation
+* Register:  Luis
+* Login: Darren
+* Logout: Luis
 
 
-Database Migration and Models:
--- Luis and Darren
-CRUD Operations:
--- Dan, Luis, Darren
+### Database Migration and Models
+-   Designing tables (users, posts, comments, etc.)
+-   Setting up SQLAlchemy models
+-   Writing Alembic migrations
+
+#### Delegation
+- Luis
+- Darren
+
+
+### CRUD Operations (Core Business Logic)
+-   Implementing API endpoints for main resources (e.g., posts, comments)
+-   Writing database queries (async SQLAlchemy or raw SQL)
+
+#### Delagation
+- Dan
+- Luis
+- Darren
 
 Testing & Error Handling:
 -- Luis
 
 
-# Example Project Structure:
+## Example Project Structure
 
-'''File/Folder	Purpose
-main.py	Starts FastAPI app & includes routes
-api/v1/endpoints/	API endpoints (routes)
-core/config.py	Stores settings (DB URL, JWT secret)
-core/security.py	Password hashing & JWT authentication
-db/models/	SQLAlchemy database models
-db/repositories/	Contains reusable database queries
-db/migrations/	Alembic migration scripts
-tests/	Unit tests using pytest
-Dockerfile	Defines the Docker container for the backend
-docker-compose.yml	Runs FastAPI + PostgreSQL locally'''
+```
+backend/
+├── app/
+│   ├── api/                # API endpoints
+│   │   ├── v1/
+│   │   │   ├── endpoints/
+│   │   │   │   ├── auth.py   # Login, register, logout
+│   │   │   │   ├── users.py  # CRUD for users
+│   │   │   │   ├── posts.py  # CRUD for posts
+│   │   │   │   ├── __init__.py
+│   │   │   ├── __init__.py
+│   │   ├── __init__.py
+│   │   
+│   ├── core/               # Configurations & security
+│   │   ├── config.py        # Settings (DB URL, secrets)
+│   │   ├── security.py      # Password hashing, JWT tokens
+│   │   ├── database.py      # DB connection setup
+│   │   ├── __init__.py
+│   │   
+│   ├── db/                 # Database models & migrations
+│   │   ├── models/
+│   │   │   ├── user.py
+│   │   │   ├── post.py
+│   │   │   ├── __init__.py
+│   │   ├── repositories/    # CRUD logic
+│   │   │   ├── user_repo.py
+│   │   │   ├── post_repo.py
+│   │   │   ├── __init__.py
+│   │   ├── migrations/      # Alembic migrations
+│   │   ├── __init__.py
+│   │   
+│   ├── tests/              # Automated tests
+│   │   ├── test_auth.py
+│   │   ├── test_users.py
+│   │   ├── test_posts.py
+│   │   ├── __init__.py
+│   │   
+│   ├── main.py             # Entry point
+│   ├── dependencies.py      # Shared dependencies
+│   ├── __init__.py
+│   
+├── alembic/                # Database migrations folder (Alembic)
+├── .env                    # Environment variables
+├── requirements.txt         # Dependencies (FastAPI, asyncpg, etc.)
+├── Dockerfile               # Docker config for deployment
+├── docker-compose.yml       # PostgreSQL + FastAPI setup
+├── .gitignore
+```
 
-# Technologies:
-Framework:
---- FastAPI
+#### **Main Application**
+- `main.py` - Starts FastAPI app & includes routes
 
-Database:
---- Postgresql/Mssql
+#### **API**
+- `api/v1/endpoints/` - API endpoints (routes)
 
-ORM:
---- SQLAlchemy
+#### **Configuration & Security**
+- `core/config.py` - Stores settings (DB URL, JWT secret)
+- `core/security.py` - Password hashing & JWT authentication
 
-Language:
---- Python
+#### **Database**
+- `db/models/` - SQLAlchemy database models
+- `db/repositories/` - Contains reusable database queries
+- `db/migrations/` - Alembic migration scripts
 
-Authentication:
---- JWT authentication
+#### **Testing**
+- `tests/` - Unit tests using pytest
+
+#### **Docker & Deployment**
+- `Dockerfile` - Defines the Docker container for the backend
+- `docker-compose.yml` - Runs FastAPI + PostgreSQL locally
+
+
+## Technologies:
+### Framework:
+* FastAPI
+
+### Database:
+- Postgresql/Mssql
+
+### ORM:
+- SQLAlchemy
+
+### Language:
+- Python
+
+### Authentication:
+- JWT authentication
 
 
