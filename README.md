@@ -118,10 +118,8 @@ backend/
 * FastAPI
 
 ### Database:
-- Postgresql/Mssql
-
-### ORM:
-- SQLAlchemy
+- Postgresql
+- asyncpg (Driver)
 
 ### Language:
 - Python
