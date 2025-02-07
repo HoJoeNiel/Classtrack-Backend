@@ -8,4 +8,4 @@ app.include_router(dummy.router)
 
 @app.get("/")
 async def root():
-  return "Try using the dummy api! E.g. /dummy/luis"
+	return "Try using the dummy api! E.g. /dummy/luis"
