@@ -15,7 +15,7 @@ def test_auth_endpoint(fake_token):
         "Authorization": fake_token
     }
 
-    response = client.get("test-auth.py", headers=headers)
+    response = client.get("/test-auth", headers=headers)
 
     assert response.status_code == 200
     assert "message" in response.json()
