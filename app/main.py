@@ -6,7 +6,7 @@ app = FastAPI()
 
 # Using the endpoint defind in dummy
 app.include_router(dummy.router)
-app.include_router(dummy.auth)
+app.include_router(auth.router)
 
 @app.get("/")
 async def root():

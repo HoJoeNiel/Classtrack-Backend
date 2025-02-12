@@ -30,6 +30,6 @@ async def verify_firebase_token(token: str = Security(security)):
         return HTTPException(status_code=401, detail="Invalid Token")
     
 
-user =  auth.create_user(email="niguser@gmail.com", password="test12345")
+user =  auth.create_user(email="nig@gmail.com", password="test12345")
 customtoken = auth.create_custom_token(user.uid)
 print(customtoken)
