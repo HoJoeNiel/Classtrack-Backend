@@ -1,5 +1,6 @@
 # Postgres docker volume directory
 db-data
+pgadmin-data
 
 
 # Byte-compiled / optimized / DLL files
