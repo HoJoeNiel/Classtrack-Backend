@@ -1,9 +1,10 @@
 import asyncpg
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
 
 DATABASE_URL= ("Url to our database")
 
-
+@asynccontextmanager
 async def lifespan(app: FastAPI):
     db_pool = await asyncpg.create_pool(DATABASE_URL)
     app.state.db_pool = db_pool
