@@ -9,7 +9,7 @@ router = APIRouter()
 async def verify_user(decoded_token: dict = Depends(verify_firebase_token), db=Depends(get_db)):
 
     user_id = decoded_token["uid"]
-    username = decoded_token["username"] #for prof credentials, not sure yet the final info of the professors.
+    email = decoded_token["email"] #for prof credentials, not sure yet the final info of the professors.
 
     query = "SELECT id FROM users WHERE firebase_uid = $1"
     user = await db.fetchrow(query, user_id)
