@@ -1,12 +1,6 @@
 import asyncpg
 from fastapi import FastAPI
-<<<<<<< HEAD
 from contextlib import asynccontextmanager
-
-DATABASE_URL= ("Url to our database")
-
-@asynccontextmanager
-=======
 import os
 from dotenv import load_dotenv
 import asyncio
@@ -15,7 +9,7 @@ load_dotenv()
 user = os.getenv("POSTGRES_USER")
 password= os.getenv("POSTGRES_PASSWORD")
 
->>>>>>> 4c42a090702768c5984ca9e9d422d9d1db54646f
+@asynccontextmanager
 async def lifespan(app: FastAPI):
 	print("connecting to db")
 	db_pool = await asyncpg.create_pool(database="classtrack", user=user, password=password)
