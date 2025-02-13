@@ -9,7 +9,7 @@ import base64
 
 load_dotenv()
 
-firebase_base64 = os.environ.get("CREDENTIALS_FIREBASE_AUTH")
+firebase_base64 = os.getenv("CREDENTIALS_FIREBASE_AUTH")
 
 if firebase_base64:
 
@@ -30,6 +30,6 @@ async def verify_firebase_token(token: str = Security(security)):
         return HTTPException(status_code=401, detail="Invalid Token")
     
 
-user =  auth.create_user(email="niguser@gmail.com", password="test12345")
-customtoken = auth.create_custom_token(user.uid)
-print(customtoken)
+# user =  auth.create_user(email="nig@gmail.com", password="test12345")
+# customtoken = auth.create_custom_token(user.uid)
+# print(customtoken)
