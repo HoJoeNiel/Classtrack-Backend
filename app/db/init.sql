@@ -11,9 +11,10 @@ CREATE TABLE IF NOT EXISTS professors (
     uid TEXT PRIMARY KEY,
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,
-    email TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL UNIQUE
     -- password is not needed as auth is handled in fronted by firebase 
 );
+
 
 -- Create Classes Table
 CREATE TABLE IF NOT EXISTS classes (
@@ -28,18 +29,32 @@ CREATE TABLE IF NOT EXISTS classes (
     -- deleted automatically.
 );
 
+
 -- Create Grade_types Table
 CREATE TABLE IF NOT EXISTS grade_types (
-    class_id TEXT NOT NULL,
+    class_id INT NOT NULL,
     type_name TEXT NOT NULL,
     quantity INT NULL NULL,
     PRIMARY KEY (class_id, type_name),
     FOREIGN KEY (class_id) REFERENCES classes(class_id)
 );
 
+
+-- Create Students Table
+CREATE TABLE IF NOT EXISTS students (
+    student_number TEXT PRIMARY KEY,
+    class_id INT NOT NULL,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    course TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    FOREIGN KEY (class_id) REFERENCES classes(class_id) ON DELETE CASCADE
+);
+
+
 -- Create Grades Table
 CREATE TABLE IF NOT EXISTS grades (
-    class_id TEXT NOT NULL,
+    class_id INT NOT NULL,
     type_name TEXT NOT NULL,
     score INT NOT NULL,
     student_number TEXT NOT NULL,
@@ -47,16 +62,6 @@ CREATE TABLE IF NOT EXISTS grades (
     FOREIGN KEY (student_number) REFERENCES students(student_number) ON DELETE CASCADE
 );
 
--- Create Students Table
-CREATE TABLE IF NOT EXISTS students (
-    student_number TEXT PRIMARY KEY,
-    class_id TEXT NOT NULL,
-    first_name TEXT NOT NULL,
-    last_name TEXT NOT NULL,
-    course TEXT NOT NULL,
-    email TEXT NOT NULL UNIQUE,
-    FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE
-);
 
 -- Create Attendance dates Table
 CREATE TABLE IF NOT EXISTS attendance_dates (
