@@ -9,21 +9,8 @@ load_dotenv()
 user = os.getenv("POSTGRES_USER")
 password= os.getenv("POSTGRES_PASSWORD")
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-	print("connecting to db")
-	db_pool = await asyncpg.create_pool(database="classtrack", user=user, password=password)
-	app.state.db_pool = db_pool
-	print("dp_pool", "connected!")
-	yield
-	await db_pool.close()    
-
-app = FastAPI(lifespan=lifespan)
-
-async def get_db():
-	async with app.state.db_pool.acquire() as connection:
-		yield connection
-
+if not user or not password:
+	raise ValueError("POSTGRES_USER and POSTGRES_PASSWORD must be set in the .env file.")
 
 class Database:
 	_pool = None
@@ -56,6 +43,7 @@ class Database:
 				
 	@classmethod 
 	async def get_connection(cls):
+		""" Returns a connection from the connection pool. """
 		if cls._pool is None:
 			raise Exception("Database not initialized. Call Database.initialize() first.")
 		
@@ -63,6 +51,7 @@ class Database:
 	
 	@classmethod
 	async def release_connection(cls, conn):
+		""" Releases a connection back to the pool. """
 		if cls._pool is None:
 			raise Exception("Database not initialized. Call Database.initialize() first.")
 		elif conn is None:
@@ -72,7 +61,35 @@ class Database:
 
 	@classmethod
 	async def close_all(cls):
+		"""Close all connection in the pool."""
 		if cls._pool is None:
 			raise Exception("Database not initialized. Call Database.initialize() first.")
 		
 		await cls._pool.close()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+	"""Handles FastAPI startup and shutdown events"""
+
+	print("Connecting to the database...")
+	await Database.initialize()
+	print("Database connected!")
+
+	yield
+
+	print("Shutting down database...")
+	await Database.close_all()    
+	print("Database connection closed.")
+
+app = FastAPI(lifespan=lifespan)
+
+
+async def get_connection():
+	"""Dependency to get a database connection."""
+	conn = await Database.get_connection()
+
+	try:
+		yield conn
+
+	finally:
+		await Database.release_connection(conn)	

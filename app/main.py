@@ -1,12 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-<<<<<<< HEAD
-from h11 import Data
 from app.api import dummy
-=======
-from app.api.endpoints import dummy
->>>>>>> 03de1e9 (Add class model)
-from app.api.endpoints import auth
+# from app.api.endpoints import auth
 from app.core.database import Database
 
 
@@ -25,7 +20,7 @@ app = FastAPI(lifespan=lifespan)
 
 # Using the endpoint defind in dummy
 app.include_router(dummy.router)
-app.include_router(auth.router)
+# app.include_router(auth.router)
 
 @app.get("/")
 async def root():
