@@ -3,6 +3,10 @@ db-data
 pgadmin-data
 
 
+#Firebase 
+config/
+config/firebase_sdk.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

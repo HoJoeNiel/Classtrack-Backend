@@ -1,6 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
+from app.core.firebase_auth import customtoken
 
 
 client = TestClient(app)
@@ -12,10 +13,11 @@ def fake_token():
 
 def test_auth_endpoint(fake_token):
     headers = {
-        "Authorization": fake_token
+        "Authorization": customtoken
     }
 
     response = client.get("/test-auth", headers=headers)
-
+    # print(response)
     assert response.status_code == 200
     assert "message" in response.json()
+

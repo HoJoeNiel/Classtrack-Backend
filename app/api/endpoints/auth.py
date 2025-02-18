@@ -1,12 +1,12 @@
 from app import core
 from app.core.firebase_auth import verify_firebase_token
-from app.core.database import get_db
+import app.core.database as db
 from fastapi import APIRouter, Depends
 import asyncpg
 
 router = APIRouter()
 
-async def verify_user(decoded_token: dict = Depends(verify_firebase_token), db=Depends(get_db)):
+async def verify_user(decoded_token: dict = Depends(verify_firebase_token), conn: asyncpg.Connection = Depends(db.get_connection)):
 
     user_id = decoded_token["uid"]
     username = decoded_token["username"] #for prof credentials, not sure yet the final info of the professors.

@@ -9,16 +9,9 @@ import base64
 
 load_dotenv()
 
-firebase_base64 = os.getenv("CREDENTIALS_FIREBASE_AUTH")
-
-if firebase_base64:
-
-    firebase_json =  json.loads(base64.b64decode(firebase_base64))
-
-    cred = credentials.Certificate(firebase_json)
-    firebase_admin.initialize_app(cred)
-else:
-    raise ValueError("CREDENTIALS_FIREBASE_AUTH is not found in environment variables")
+firebase_json = os.getenv("FIREBASE_JSON")
+cred = credentials.Certificate(firebase_json)
+firebase_admin.initialize_app(cred)
 
 security = HTTPBearer()
 
@@ -30,6 +23,6 @@ async def verify_firebase_token(token: str = Security(security)):
         return HTTPException(status_code=401, detail="Invalid Token")
     
 
-# user =  auth.create_user(email="nig@gmail.com", password="test12345")
-# customtoken = auth.create_custom_token(user.uid)
-# print(customtoken)
+# user =  auth.create_user(email="dan@gmail.com", password="test12345")
+customtoken = auth.create_custom_token("Ps9FnhDzfGRj1elCEfSbIe8b0Sj1")
+print(customtoken)
