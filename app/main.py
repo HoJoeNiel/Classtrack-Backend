@@ -24,4 +24,5 @@ app.include_router(auth.router)
 
 @app.get("/")
 async def root():
+	print("holy shit")
 	return "Try using the dummy api! E.g. /dummy/luis"

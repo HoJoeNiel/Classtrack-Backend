@@ -6,7 +6,8 @@
     under the database service.
 */
 
--- Create Professors Table
+-- Create Professors Table.
+-- The users are the professors.
 CREATE TABLE IF NOT EXISTS professors (
     uid TEXT PRIMARY KEY,
     first_name TEXT NOT NULL,
