@@ -1,25 +1,24 @@
-from app import core
-from app.core.firebase_auth import verify_firebase_token
-from app.core.database import get_db
+from app.core.security import verify_firebase_token
+from app.core.database import get_connection
 from fastapi import APIRouter, Depends
-import asyncpg
 
 router = APIRouter()
 
-async def verify_user(decoded_token: dict = Depends(verify_firebase_token), db=Depends(get_db)):
+async def verify_user(decoded_token: dict = Depends(verify_firebase_token), conn=Depends(get_connection)):
 
-    user_id = decoded_token["uid"]
-    username = decoded_token["username"] #for prof credentials, not sure yet the final info of the professors.
-
-    query = "SELECT id FROM users WHERE firebase_uid = $1"
-    user = await db.fetchrow(query, user_id)
+    uid = decoded_token["uid"] 
+    email = decoded_token["email"]
+    print(decoded_token)
+    
+    query = f"SELECT * FROM professors WHERE uid = {uid};"
+    user = await conn.fetchrow(query)
 
     if not user:
-        insert_query = "INSERT INTO users (firebase_uid, email) VALUES ($1, $2) RETURNING id"
-        user = await db.fetchrow(insert_query, user_id)
+        insert_query = f"INSERT INTO professors (uid, email) VALUES ({uid}, {email});"
+        user = await conn.fetchrow(insert_query)
 
     return {"Message": "User verified", "user_id":user["id"]}
 
-@router.get("/test-auth")
+@router.get("/test/test-auth")
 async def test_auth(decoded_token: dict = Depends(verify_firebase_token)):
-    return {"message": "Authenticated successfully", "user": decoded_token}
+    return {"message": decoded_token}
