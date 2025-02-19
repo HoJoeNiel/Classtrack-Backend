@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS professors (
 -- Create Classes Table
 CREATE TABLE IF NOT EXISTS classes (
     class_id SERIAL PRIMARY KEY,
+    class_size INT NOT NULL,
     prof_id TEXT NOT NULL, -- foreign key
     schedule TEXT NOT NULL,
     section TEXT NOT NULL,

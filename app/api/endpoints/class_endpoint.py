@@ -1,3 +1,4 @@
+from email import message
 import asyncpg
 from fastapi import APIRouter, Depends
 import app.core.database as db
@@ -11,7 +12,7 @@ async def get_classes(conn: asyncpg.Connection = Depends(db.get_connection), tok
 
 @router.get("/api/classes/{class_id}")
 async def get_class(class_id: int, conn: asyncpg.Connection = Depends(db.get_connection)):
-    query = "SELECT schedule, section, subject_name, subject_code, class_id FROM classes WHERE class_id = $1"
+    query = "SELECT class_size, schedule, section, subject_name, subject_code, class_id FROM classes WHERE class_id = $1"
     class_data = await conn.fetchrow(query, class_id)
 
     if not class_data:
@@ -19,3 +20,12 @@ async def get_class(class_id: int, conn: asyncpg.Connection = Depends(db.get_con
 
     return {"content":dict(class_data)}
 
+@router.get("/api/classes/{class_id}/students")
+async def get_students_from_class(class_id: int, conn: asyncpg.Connection = Depends(db.get_connection)):
+    query = "SELECT * FROM students WHERE class_id = $1"
+    students = await conn.fetch(query, class_id)
+
+    if not students:
+        return {"message": "wala kang student gaghooo!"}
+    
+    return {"content": students}
