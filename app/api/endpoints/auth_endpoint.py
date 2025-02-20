@@ -10,12 +10,12 @@ async def verify_user(decoded_token: dict = Depends(verify_firebase_token), conn
     email = decoded_token["email"]
     print(decoded_token)
     
-    query = f"SELECT * FROM professors WHERE uid = {uid};"
-    user = await conn.fetchrow(query)
+    query = "SELECT * FROM professors WHERE uid = $1;"
+    user = await conn.fetchrow(query, uid)
 
     if not user:
-        insert_query = f"INSERT INTO professors (uid, email) VALUES ({uid}, {email});"
-        user = await conn.fetchrow(insert_query)
+        insert_query = "INSERT INTO professors (uid, email) VALUES ($1, $2);"
+        user = await conn.fetchrow(insert_query, uid, email)
 
     return {"Message": "User verified", "user_id":user["id"]}
 
