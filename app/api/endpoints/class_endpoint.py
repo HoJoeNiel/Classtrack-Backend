@@ -63,3 +63,5 @@ async def insert_student(studentModel: Students, class_id: int, conn: asyncpg.Co
     res = await class_repository.insert_student_to_db(studentModel, conn, class_id)
 
     return {"message": f"Student successfully added."}
+
+    

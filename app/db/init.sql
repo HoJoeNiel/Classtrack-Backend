@@ -54,16 +54,23 @@ CREATE TABLE IF NOT EXISTS students (
 );
 
 
--- Create Grades Table
-CREATE TABLE IF NOT EXISTS grades (
+-- Create Grades Tables
+CREATE TABLE IF NOT EXISTS assessments (
     class_id INT NOT NULL,
     type_name TEXT NOT NULL,
-    score INT NOT NULL,
-    student_number TEXT NOT NULL,
-    FOREIGN KEY (class_id, type_name) REFERENCES grade_types(class_id, type_name),
-    FOREIGN KEY (student_number) REFERENCES students(student_number) ON DELETE CASCADE
+    grade_id INT PRIMARY KEY,
+    grade_name TEXT NOT NULL,
+    FOREIGN KEY (class_id, type_name) REFERENCES grade_types(class_id, type_name)
 );
 
+
+CREATE TABLE IF NOT EXISTS scores (
+    score INT NOT NULL,
+    student_number TEXT NOT NULL,
+    grade_id INT NOT NULL,
+    FOREIGN KEY (student_number) REFERENCES students(student_number) ON DELETE CASCADE,
+    FOREIGN KEY (grade_id) REFERENCES assessments(grade_id) ON DELETE CASCADE
+);
 
 -- Create Attendance dates Table
 CREATE TABLE IF NOT EXISTS attendance_dates (
