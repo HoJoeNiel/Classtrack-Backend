@@ -36,3 +36,8 @@ async def delete_class_from_db(conn: asyncpg.Connection, class_id: int):
     """Deletes a class from db given class_id."""
 
     await conn.execute("DELETE FROM classes WHERE class_id= $1;", class_id)
+
+
+async def get_students_from_classes_table(conn: asyncpg.Connection, class_id:int):
+
+    return await conn.fetch("SELECT * FROM students WHERE class_id = $1;", class_id)

@@ -7,7 +7,7 @@ import os
 
 load_dotenv()
 
-cred = credentials.Certificate(os.getenv("FIREBASE_CRED_PATH"))
+cred = credentials.Certificate(os.getenv("FIREBASE_CRED_PATH").replace("\\n", "\n"))
 firebase_admin.initialize_app(cred)
 
 security = HTTPBearer()
@@ -15,7 +15,7 @@ security = HTTPBearer()
 async def verify_firebase_token(token: str = Security(security)):
     try:
         # Attempt to verify the Firebase ID token
-        decoded_token = auth.verify_id_token(token.credentials)
+        decoded_token = auth.verify_id_token(token.credentials, clock_skew_seconds=10)
         print("Decoded Token:", decoded_token)  # Check the decoded token
         return decoded_token
     except Exception as e:

@@ -36,3 +36,4 @@ def test_auth_endpoint():
     response = client.get("/test/test-auth", headers=headers)
     assert response.status_code == 200
     assert "message" in response.json()
+
