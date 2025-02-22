@@ -10,7 +10,8 @@ router = APIRouter()
 
 @router.get("/api/classes")
 async def get_classes(conn: asyncpg.Connection = Depends(db.get_connection), token = Depends(verify_firebase_token)):
-    res = await class_repository.get_classes_from_db(conn)
+    prof_id = token["uid"]
+    res = await class_repository.get_classes_from_db(conn, prof_id)
     return {"classes": res}
 
 
@@ -41,7 +42,7 @@ async def get_class(class_id: int, conn: asyncpg.Connection = Depends(db.get_con
 
     return {"content":dict(class_data)}
 
-@router.get("/api/classes/{class_id}/students")
+@router.get("/api/classes/{class_id}/students", response_model=Content)
 async def get_students_from_class(class_id: int, conn: asyncpg.Connection = Depends(db.get_connection)):
     # query = "SELECT * FROM students WHERE class_id = $1"
     # students = await conn.fetch(query, class_id)
@@ -54,3 +55,13 @@ async def get_students_from_class(class_id: int, conn: asyncpg.Connection = Depe
     
     students_list = [Students(**dict(student))for student in students]
     return {"content": students_list}
+
+
+@router.post("/api/classes/{class_id}/students")
+async def insert_student(studentModel: Students, class_id: int, conn: asyncpg.Connection = Depends(db.get_connection)):
+
+    res = await class_repository.insert_student_to_db(studentModel, conn, class_id)
+
+    return {"message": f"Student successfully added."}
+
+    

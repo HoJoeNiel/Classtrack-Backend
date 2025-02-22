@@ -3,14 +3,15 @@
 
 import asyncpg
 
-from app.db.models.class_model import ClassModel
+from app.db.models.class_model import ClassModel, Students
 
 
-async def get_classes_from_db(conn: asyncpg.Connection):
+async def get_classes_from_db(conn: asyncpg.Connection, prof_id: str):
+
     """Returns a list of classes from the database."""
 
     # Query from the database
-    return await conn.fetch("SELECT * FROM classes;")
+    return await conn.fetch("SELECT * FROM classes WHERE prof_id = $1;", prof_id)
 
 async def get_class_from_db(conn: asyncpg.Connection, class_id: int):
     """Returns class data from db given class_id."""
@@ -39,5 +40,25 @@ async def delete_class_from_db(conn: asyncpg.Connection, class_id: int):
 
 
 async def get_students_from_classes_table(conn: asyncpg.Connection, class_id:int):
+    """ Get class according to the given class_id """
 
     return await conn.fetch("SELECT * FROM students WHERE class_id = $1;", class_id)
+
+async def insert_student_to_db(model: Students, conn: asyncpg.Connection, class_id:int):
+    """ Insert Students to class according to class_id"""
+
+    #Converts the pydantics model to dictionary
+    new_student_dict = model.model_dump()
+
+    #Makes each column comma seperated
+    values = ", ".join(new_student_dict.keys())
+
+    #iterates the placeholder to make it ($1, $2),
+    placeholders = ", ".join(f"${i + 1}" for i in range(len(new_student_dict)))
+
+    
+    query = f"""
+            INSERT INTO students ({values}) VALUES ({placeholders}) RETURNING class_id;
+            """
+
+    return await conn.fetchval(query, *new_student_dict.values())
