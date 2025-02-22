@@ -32,15 +32,13 @@ CREATE TABLE IF NOT EXISTS classes (
 );
 
 
--- Create Grade_types Table
+-- Create Grade Types Table
 CREATE TABLE IF NOT EXISTS grade_types (
+    grade_type_id SERIAL PRIMARY KEY,
     class_id INT NOT NULL,
     type_name TEXT NOT NULL,
-    quantity INT NULL NULL,
-    PRIMARY KEY (class_id, type_name),
-    FOREIGN KEY (class_id) REFERENCES classes(class_id)
+    FOREIGN KEY (class_id) REFERENCES classes(class_id) ON DELETE CASCADE
 );
-
 
 -- Create Students Table
 CREATE TABLE IF NOT EXISTS students (
@@ -53,29 +51,33 @@ CREATE TABLE IF NOT EXISTS students (
     FOREIGN KEY (class_id) REFERENCES classes(class_id) ON DELETE CASCADE
 );
 
-
--- Create Grades Tables
+-- Create Assessments Table
 CREATE TABLE IF NOT EXISTS assessments (
+    grade_id SERIAL PRIMARY KEY,
     class_id INT NOT NULL,
-    type_name TEXT NOT NULL,
-    grade_id INT PRIMARY KEY,
-    grade_name TEXT NOT NULL,
-    FOREIGN KEY (class_id, type_name) REFERENCES grade_types(class_id, type_name)
+    grade_type_id INT NOT NULL,
+    assessment_name TEXT NOT NULL,  -- Renamed from 'grade_name' for clarity
+    FOREIGN KEY (class_id) REFERENCES classes(class_id) ON DELETE CASCADE,
+    FOREIGN KEY (grade_type_id) REFERENCES grade_types(grade_type_id) ON DELETE CASCADE
 );
 
-
+-- Create Scores Table
 CREATE TABLE IF NOT EXISTS scores (
-    score INT NOT NULL,
     student_number TEXT NOT NULL,
     grade_id INT NOT NULL,
+    score INT NOT NULL DEFAULT 0,  -- Default score is 0
+    PRIMARY KEY (student_number, grade_id),
     FOREIGN KEY (student_number) REFERENCES students(student_number) ON DELETE CASCADE,
     FOREIGN KEY (grade_id) REFERENCES assessments(grade_id) ON DELETE CASCADE
 );
 
+
 -- Create Attendance dates Table
 CREATE TABLE IF NOT EXISTS attendance_dates (
     date_id SERIAL PRIMARY KEY,
-    attendance_date DATE NOT NULL UNIQUE 
+    attendance_date DATE NOT NULL UNIQUE,
+    class id INT NOT NULL,
+    FOREIGN KEY (class_id) REFERENCES classes(class_id) ON DELETE CASCADE
 );
 
 -- Create Attendance records table

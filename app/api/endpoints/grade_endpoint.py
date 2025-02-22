@@ -8,6 +8,6 @@ from app.db.models.grade_model import Students, Content
 
 router = APIRouter()
 
-@router.get("/api/classes/{_id}/grade_types")
+@router.get("/api/classes/{class_id}/grade_types")
 async def get_grade_types():
     pass
