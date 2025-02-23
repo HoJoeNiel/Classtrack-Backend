@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS assessments (
     class_id INT NOT NULL,
     grade_type_id INT NOT NULL,
     assessment_name TEXT NOT NULL,  -- Renamed from 'grade_name' for clarity
+    total_items INT NOT NULL DEFAULT 0,
     FOREIGN KEY (class_id) REFERENCES classes(class_id) ON DELETE CASCADE,
     FOREIGN KEY (grade_type_id) REFERENCES grade_types(grade_type_id) ON DELETE CASCADE
 );
