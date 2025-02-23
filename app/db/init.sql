@@ -53,10 +53,11 @@ CREATE TABLE IF NOT EXISTS students (
 
 -- Create Assessments Table
 CREATE TABLE IF NOT EXISTS assessments (
-    grade_id SERIAL PRIMARY KEY,
+    assessment_id SERIAL PRIMARY KEY,
     class_id INT NOT NULL,
     grade_type_id INT NOT NULL,
     assessment_name TEXT NOT NULL,  -- Renamed from 'grade_name' for clarity
+    total_items INT NOT NULL DEFAULT 0,
     FOREIGN KEY (class_id) REFERENCES classes(class_id) ON DELETE CASCADE,
     FOREIGN KEY (grade_type_id) REFERENCES grade_types(grade_type_id) ON DELETE CASCADE
 );
@@ -64,11 +65,11 @@ CREATE TABLE IF NOT EXISTS assessments (
 -- Create Scores Table
 CREATE TABLE IF NOT EXISTS scores (
     student_number TEXT NOT NULL,
-    grade_id INT NOT NULL,
+    assessment_id INT NOT NULL,
     score INT NOT NULL DEFAULT 0,  -- Default score is 0
-    PRIMARY KEY (student_number, grade_id),
+    PRIMARY KEY (student_number, assessment_id),
     FOREIGN KEY (student_number) REFERENCES students(student_number) ON DELETE CASCADE,
-    FOREIGN KEY (grade_id) REFERENCES assessments(grade_id) ON DELETE CASCADE
+    FOREIGN KEY (assessment_id) REFERENCES assessments(assessment_id) ON DELETE CASCADE
 );
 
 
