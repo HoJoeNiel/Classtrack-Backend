@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS scores (
 CREATE TABLE IF NOT EXISTS attendance_dates (
     date_id SERIAL PRIMARY KEY,
     attendance_date DATE NOT NULL UNIQUE,
-    class id INT NOT NULL,
+    class_id INT NOT NULL,
     FOREIGN KEY (class_id) REFERENCES classes(class_id) ON DELETE CASCADE
 );
 
