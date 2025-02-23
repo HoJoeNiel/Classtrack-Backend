@@ -14,5 +14,5 @@ async def get_grade_types():
 
 
 @router.post("/api/classes/{class_id}/{type_name}/assessments")
-async def insert_assessment(class_id: int, type_name:str, conn: asyncpg.Connection = Depends(db.get_connection)):
-    res = await grade_repository.insert_assessment_to_db(conn, class_id, type_name)
+async def insert_assessment(assessment_model: AssessmentModel, class_id: int, type_name:str, conn: asyncpg.Connection = Depends(db.get_connection)):
+    res = await grade_repository.insert_assessment_to_db(conn, class_id, type_name, assessment_model)

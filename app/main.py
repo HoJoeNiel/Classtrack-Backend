@@ -15,8 +15,6 @@ async def lifespan(app: FastAPI):
 
 	conn = await Database.get_connection()
 	await score_trigger(conn)
-	await conn.close()
-
 	yield
 
 	# Shutdown
