@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS students (
 
 -- Create Assessments Table
 CREATE TABLE IF NOT EXISTS assessments (
-    grade_id SERIAL PRIMARY KEY,
+    assessment_id SERIAL PRIMARY KEY,
     class_id INT NOT NULL,
     grade_type_id INT NOT NULL,
     assessment_name TEXT NOT NULL,  -- Renamed from 'grade_name' for clarity
