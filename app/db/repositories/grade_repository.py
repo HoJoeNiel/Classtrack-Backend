@@ -7,14 +7,18 @@ from app.db.models.grade_model import AssessmentModel
 async def insert_assessment_to_db(conn: asyncpg.Connection, class_id: int, type_name: str, new_assessment:AssessmentModel):
     
     new_assessment_dict =  new_assessment.model_dump()
-    values = ", ".join(new_assessment_dict.keys())
-    placeholder = ", ".join(f"${i + 1}" for i in range(len(new_assessment_dict)))
-    
-    query = f"""
-        INSERT INTO assessments ({values}) VALUES ({placeholder})    
-    """
 
-    return await conn.execute(query, *new_assessment_dict.values())
+    grade_type_id_record = await conn.fetchrow("SELECT grade_type_id FROM grade_types WHERE type_name = $1", type_name )
+
+    grade_type_id = grade_type_id_record["grade_type_id"] if grade_type_id_record else None 
+    
+    query = f""" 
+        INSERT INTO assessments (class_id, grade_type_id, assessment_name)
+        VALUES ($1, $2, $3)
+    """    
+    print(new_assessment_dict['assessment_name'])
+
+    return await conn.execute(query, class_id, grade_type_id, new_assessment_dict['assessment_name'])
 
 
 
@@ -55,3 +59,4 @@ async def score_trigger(conn: asyncpg.Connection = Depends(db.get_connection)):
         """)
     await conn.close()
     
+# async def delete_assessment_to_db(class_id: int, t)
