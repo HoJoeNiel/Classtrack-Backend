@@ -59,4 +59,10 @@ async def score_trigger(conn: asyncpg.Connection = Depends(db.get_connection)):
         """)
     await conn.close()
     
-# async def delete_assessment_to_db(class_id: int, t)
+async def delete_assessment_to_db(class_id: int, grade_type_id: int, grade_id, conn: asyncpg.Connection):
+
+    query = """
+        DELETE FROM assessments WHERE class_id = $1 AND grade_type_id = $2 AND grade_id = $3 RETURNING GRADE_ID 
+    """
+
+    return await conn.fetchval(query, class_id, grade_type_id, grade_id)
