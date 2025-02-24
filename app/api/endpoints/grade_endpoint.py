@@ -27,3 +27,8 @@ async def delete_assessment(class_id: int, grade_type_id: int, grade_id:int, con
     res = await grade_repository.delete_assessment_to_db(class_id, grade_type_id, grade_id, conn)
 
     return {'message': f"assessment successfully deleted -> {res}."}
+
+@router.get("/api/classes/{class_id}/scores")
+async def get_scores(class_id: int, grade_type_id: int, grade_id: str, conn: asyncpg.Connection = Depends(db.get_connection)):
+
+    pass

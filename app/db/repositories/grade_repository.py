@@ -66,3 +66,11 @@ async def delete_assessment_to_db(class_id: int, grade_type_id: int, grade_id, c
     """
 
     return await conn.fetchval(query, class_id, grade_type_id, grade_id)
+
+async def get_scores_from_db(class_id: int, grade_type_id: int, grade_id, conn: asyncpg.Connection):
+
+    # grade_id_record = await conn.fetchrow("SELECT grade_id FROM assessments WHERE class_id = $1 and ")
+
+    query = """
+        SELECT * FROM scores WHERE class_id 
+    """
