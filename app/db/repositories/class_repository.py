@@ -58,7 +58,7 @@ async def insert_student_to_db(model: Students, conn: asyncpg.Connection, class_
 
     
     query = f"""
-            INSERT INTO students ({values}) VALUES ({placeholders}) RETURNING class_id;
+            INSERT INTO students ({values}) VALUES ({placeholders});
             """
 
-    return await conn.fetchval(query, *new_student_dict.values())
+    return await conn.execute(query, *new_student_dict.values())

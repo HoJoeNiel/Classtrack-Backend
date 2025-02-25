@@ -2,8 +2,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from app.api import dummy
-from app.api.endpoints import auth_endpoint, class_endpoint
+from app.api.endpoints import auth_endpoint, class_endpoint, grade_endpoint
 from app.core.database import Database
+from app.db.repositories.grade_repository import score_trigger, student_score_trigger
 import asyncpg
 
 
@@ -12,6 +13,10 @@ async def lifespan(app: FastAPI):
 	# Initialize database
 	await Database.initialize()
 
+	conn = await Database.get_connection()
+	await score_trigger(conn)
+	await student_score_trigger(conn)
+	await conn.close()
 	yield
 
 	# Shutdown
@@ -32,6 +37,7 @@ async def database_exception_handler(request: Request, exc: asyncpg.PostgresErro
 app.include_router(dummy.router)
 app.include_router(auth_endpoint.router)
 app.include_router(class_endpoint.router)
+app.include_router(grade_endpoint.router)
 
 @app.get("/")
 async def root():

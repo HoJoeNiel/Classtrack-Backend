@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS students (
     last_name TEXT NOT NULL,
     course TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
+    address TEXT NOT NULL,
     FOREIGN KEY (class_id) REFERENCES classes(class_id) ON DELETE CASCADE
 );
 
