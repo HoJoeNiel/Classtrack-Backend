@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from app.api import dummy
 from app.api.endpoints import auth_endpoint, class_endpoint, grade_endpoint
 from app.core.database import Database
-from app.db.repositories.grade_repository import score_trigger
+from app.db.repositories.grade_repository import score_trigger, student_score_trigger
 import asyncpg
 
 
@@ -15,6 +15,8 @@ async def lifespan(app: FastAPI):
 
 	conn = await Database.get_connection()
 	await score_trigger(conn)
+	await student_score_trigger(conn)
+	await conn.close()
 	yield
 
 	# Shutdown

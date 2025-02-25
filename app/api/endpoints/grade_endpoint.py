@@ -32,7 +32,7 @@ async def delete_assessment(class_id: int, grade_type_id: int, grade_id:int, con
 async def get_scores(class_id: int, grade_type_id: int, conn: asyncpg.Connection = Depends(db.get_connection)):
 
     res = await grade_repository.get_scores_from_db(class_id, grade_type_id, conn)
-    print(res)
+    # print(res)
     return {'content': res}
 
 

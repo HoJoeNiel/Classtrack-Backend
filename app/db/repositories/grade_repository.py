@@ -23,7 +23,7 @@ async def insert_assessment_to_db(conn: asyncpg.Connection, class_id: int, type_
 
 
 async def score_trigger(conn: asyncpg.Connection = Depends(db.get_connection)):
-    
+    """ this trigger the score of each student to default(0) every time professors create new assessment."""
     function_exists = await conn.fetchval("""
         SELECT EXISTS (
             SELECT 1 FROM pg_proc WHERE proname = 'insert_default_scores'
@@ -57,7 +57,51 @@ async def score_trigger(conn: asyncpg.Connection = Depends(db.get_connection)):
             AFTER INSERT ON assessments
             FOR EACH ROW EXECUTE FUNCTION insert_default_scores();
         """)
-    await conn.close()
+    # await conn.close()
+
+async def student_score_trigger(conn: asyncpg.Connection = Depends(db.get_connection)):
+    
+    function_exists = await conn.fetchval("""
+        SELECT EXISTS (
+            SELECT 1 FROM pg_proc WHERE proname = 'add_default_scores'                          
+        );
+    """)
+                                        
+    
+    if not function_exists:
+        await conn.execute(
+            """
+                CREATE OR REPLACE FUNCTION add_default_scores()
+                RETURNS TRIGGER
+                LANGUAGE plpgsql
+                AS $$   
+                BEGIN 
+                    INSERT INTO scores (student_number, grade_id, score)
+                    SELECT NEW.student_number, a.grade_id, 0
+                    FROM assessments a
+                    WHERE a.class_id = NEW.class_id;
+                    RETURN NEW;
+                END;
+                $$;
+            """
+        )
+
+
+    trigger_exists = await conn.fetchval("""
+        SELECT EXISTS (
+            SELECT 1 FROM pg_trigger WHERE tgname = 'auto_add_scores'                          
+        ); 
+    """)
+
+    if not trigger_exists:
+        await conn.execute("""
+                
+                CREATE TRIGGER auto_add_scores
+                AFTER INSERT ON students
+                FOR EACH ROW EXECUTE FUNCTION add_default_scores()
+            """)
+    
+
     
 async def delete_assessment_to_db(class_id: int, grade_type_id: int, grade_id, conn: asyncpg.Connection):
 
