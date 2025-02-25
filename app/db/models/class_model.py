@@ -26,6 +26,7 @@ class Students(BaseModel):
     last_name: str
     course: str
     email: EmailStr
+    address: str
 
 class Content(BaseModel):
     content: List[Students]

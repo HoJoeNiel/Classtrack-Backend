@@ -21,10 +21,10 @@ async def insert_assessment(assessment_model: Annotated[AssessmentModel, Body(em
     res = await grade_repository.insert_assessment_to_db(conn, class_id, type_name, assessment_model)
 
 
-@router.delete("/api/classes/{class_id}/{grade_type_id}/assessments/{grade_id}")
-async def delete_assessment(class_id: int, grade_type_id: int, grade_id:int, conn: asyncpg.Connection = Depends(db.get_connection)):
+@router.delete("/api/classes/{class_id}/{grade_type_id}/assessments/{assessment_id}")
+async def delete_assessment(class_id: int, grade_type_id: int, assessment_id:int, conn: asyncpg.Connection = Depends(db.get_connection)):
     
-    res = await grade_repository.delete_assessment_to_db(class_id, grade_type_id, grade_id, conn)
+    res = await grade_repository.delete_assessment_to_db(class_id, grade_type_id, assessment_id, conn)
 
     return {'message': f"assessment successfully deleted -> {res}."}
 

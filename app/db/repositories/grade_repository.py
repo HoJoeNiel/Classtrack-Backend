@@ -34,8 +34,8 @@ async def score_trigger(conn: asyncpg.Connection = Depends(db.get_connection)):
                 CREATE OR REPLACE FUNCTION insert_default_scores()
                 RETURNS TRIGGER AS $$
                 BEGIN
-                    INSERT INTO scores (student_number, grade_id, score)
-                    SELECT s.student_number, NEW.grade_id, 0
+                    INSERT INTO scores (student_number, assessment_id, score)
+                    SELECT s.student_number, NEW.assessment_id, 0
                     FROM students s
                     WHERE s.class_id = NEW.class_id;
                     RETURN NEW;
@@ -76,8 +76,8 @@ async def student_score_trigger(conn: asyncpg.Connection = Depends(db.get_connec
                 LANGUAGE plpgsql
                 AS $$   
                 BEGIN 
-                    INSERT INTO scores (student_number, grade_id, score)
-                    SELECT NEW.student_number, a.grade_id, 0
+                    INSERT INTO scores (student_number, assessment_id, score)
+                    SELECT NEW.student_number, a.assessment_id, 0
                     FROM assessments a
                     WHERE a.class_id = NEW.class_id;
                     RETURN NEW;
@@ -95,6 +95,7 @@ async def student_score_trigger(conn: asyncpg.Connection = Depends(db.get_connec
 
     if not trigger_exists:
         await conn.execute("""
+                DROP TRIGGER IF EXISTS auto_add_scores ON students CASCADE;           
                 
                 CREATE TRIGGER auto_add_scores
                 AFTER INSERT ON students
@@ -103,23 +104,23 @@ async def student_score_trigger(conn: asyncpg.Connection = Depends(db.get_connec
     
 
     
-async def delete_assessment_to_db(class_id: int, grade_type_id: int, grade_id, conn: asyncpg.Connection):
+async def delete_assessment_to_db(class_id: int, grade_type_id: int, assessment_id, conn: asyncpg.Connection):
 
     query = """
-        DELETE FROM assessments WHERE class_id = $1 AND grade_type_id = $2 AND grade_id = $3 RETURNING GRADE_ID 
+        DELETE FROM assessments WHERE class_id = $1 AND grade_type_id = $2 AND assessment_id = $3 RETURNING assessment_id 
     """
 
-    return await conn.fetchval(query, class_id, grade_type_id, grade_id)
+    return await conn.fetchval(query, class_id, grade_type_id, assessment_id)
 
 async def get_scores_from_db(class_id: int, grade_type_id: int, conn: asyncpg.Connection):
 
-    grade_id_record = await conn.fetch("SELECT grade_id FROM assessments WHERE class_id = $1 AND grade_type_id = $2", class_id, grade_type_id)
+    assessment_id_record = await conn.fetch("SELECT assessment_id FROM assessments WHERE class_id = $1 AND grade_type_id = $2", class_id, grade_type_id)
 
-    # grade_id = [for grade_id_record["grade_id"] if grade_id_record else None]
-    grade_id =  [record["grade_id"] for record in grade_id_record]
+    # assessment_id = [for assessment_id_record["assessment_id"] if assessment_id_record else None]
+    assessment_id =  [record["assessment_id"] for record in assessment_id_record]
     query = """
-        SELECT * FROM scores WHERE grade_id = ANY($1)
+        SELECT * FROM scores WHERE assessment_id = ANY($1)
         """
-    # print(grade_id)
-    # return grade_id
-    return await conn.fetch(query, grade_id)
+    # print(assessment_id)
+    # return assessment_id
+    return await conn.fetch(query, assessment_id)
