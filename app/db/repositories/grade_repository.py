@@ -1,7 +1,7 @@
 import asyncpg
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 import app.core.database as db
-from app.db.models.grade_model import AssessmentModel
+from app.db.models.grade_model import AssessmentModel, ScoreList
 
 
 async def insert_assessment_to_db(conn: asyncpg.Connection, class_id: int, type_name: str, new_assessment:AssessmentModel):
@@ -124,3 +124,22 @@ async def get_scores_from_db(class_id: int, grade_type_id: int, conn: asyncpg.Co
     # print(assessment_id)
     # return assessment_id
     return await conn.fetch(query, assessment_id)
+
+async def update_scores_to_db(class_id: int, model:ScoreList, conn: asyncpg.Connection):
+    query = """
+        UPDATE scores
+        SET score = $1
+        WHERE student_number = $2 
+        AND assessment_id = $3
+        AND assessment_id IN (SELECT assessment_id FROM assessments WHERE class_id = $4)
+    """
+
+
+    try:
+        async with conn.transaction():
+            for score in model.scores:
+                await conn.execute(query, score.score, score.student_number, score.assessment_id, class_id)
+
+        return {'message': 'Scores successfully updated.'}
+    except Exception as e:
+        raise HTTPException(500, str(e))
