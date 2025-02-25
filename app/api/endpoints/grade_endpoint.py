@@ -28,7 +28,12 @@ async def delete_assessment(class_id: int, grade_type_id: int, grade_id:int, con
 
     return {'message': f"assessment successfully deleted -> {res}."}
 
-@router.get("/api/classes/{class_id}/scores")
-async def get_scores(class_id: int, grade_type_id: int, grade_id: str, conn: asyncpg.Connection = Depends(db.get_connection)):
+@router.get("/api/classes/{class_id}/{grade_type_id}/scores")
+async def get_scores(class_id: int, grade_type_id: int, conn: asyncpg.Connection = Depends(db.get_connection)):
 
-    pass
+    res = await grade_repository.get_scores_from_db(class_id, grade_type_id, conn)
+    print(res)
+    return {'content': res}
+
+
+# @router.put()

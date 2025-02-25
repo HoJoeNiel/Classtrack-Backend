@@ -67,10 +67,15 @@ async def delete_assessment_to_db(class_id: int, grade_type_id: int, grade_id, c
 
     return await conn.fetchval(query, class_id, grade_type_id, grade_id)
 
-async def get_scores_from_db(class_id: int, grade_type_id: int, grade_id, conn: asyncpg.Connection):
+async def get_scores_from_db(class_id: int, grade_type_id: int, conn: asyncpg.Connection):
 
-    # grade_id_record = await conn.fetchrow("SELECT grade_id FROM assessments WHERE class_id = $1 and ")
+    grade_id_record = await conn.fetch("SELECT grade_id FROM assessments WHERE class_id = $1 AND grade_type_id = $2", class_id, grade_type_id)
 
+    # grade_id = [for grade_id_record["grade_id"] if grade_id_record else None]
+    grade_id =  [record["grade_id"] for record in grade_id_record]
     query = """
-        SELECT * FROM scores WHERE class_id 
-    """
+        SELECT * FROM scores WHERE grade_id = ANY($1)
+        """
+    # print(grade_id)
+    # return grade_id
+    return await conn.fetch(query, grade_id)
