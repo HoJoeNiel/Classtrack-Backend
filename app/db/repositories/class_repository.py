@@ -62,3 +62,6 @@ async def insert_student_to_db(model: Students, conn: asyncpg.Connection, class_
             """
 
     return await conn.execute(query, *new_student_dict.values())
+
+async def delete_student_to_db(conn: asyncpg.Connection, class_id: int, student_number: int):
+    return await conn.execute("DELETE FROM students WHERE student_number = $1 AND class_id: $2;",student_number, class_id)

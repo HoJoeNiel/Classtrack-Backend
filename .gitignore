@@ -7,7 +7,7 @@ pgadmin-data
 
 
 #Firebase 
-firebase-sdk.json
+firebase_sdk.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

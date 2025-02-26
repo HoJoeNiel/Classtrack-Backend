@@ -40,5 +40,4 @@ async def get_scores(class_id: int, grade_type_id: int, conn: asyncpg.Connection
 @router.put("/api/classes/{class_id}/scores")
 async def update_scores(class_id: int, model:ScoreList, conn: asyncpg.Connection = Depends(db.get_connection)):
     res = await grade_repository.update_scores_to_db(class_id, model, conn)
-
     return {'message': res}

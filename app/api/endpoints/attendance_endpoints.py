@@ -34,14 +34,10 @@ async def delete_attendance_date(class_id: int, dates_id: int, conn: asyncpg.Con
 @router.get("/api/classes/{date_id}/attendance_records")
 async def get_attendance_records(date_id: int, conn: asyncpg.Connection = Depends(db.get_connection)):
     res: AttendanceRecordsList = await attendance_repository.get_attendance_records(conn, date_id) 
-    return res.dict()
+    return res.model_dump()
 
 # Update attendance record using record_id 
 # added 'date_id' to avoid argument mismatch as endpoint calls for 'date_id'
-async def update_attendance_record(conn: asyncpg.Connection, date_id: int, record: AttendanceRecord):
+@router.put("/api/classes{class_id}/{date_id}/attendance_records")
+async def update_attendance_record(class_id: int, date_id: int, record: AttendanceRecord, conn: asyncpg.Connection = Depends(db.get_connection)):
     return await conn.execute("UPDATE attendance_records SET status = $1 WHERE date_id = $2 AND record_id = $3;",record.status, date_id, record.record_id)
-
-# Delete attendance record using class_id and student_number
-async def delete_student_from_class(conn: asyncpg.Connection, class_id: int, student_number: int):
-    result = await conn.execute("DELETE FROM attendance_records WHERE student_number = $1 AND class_id: $2;",student_number, class_id)
-    return result == "DELETE 1"  # Returns True if a record was deleted

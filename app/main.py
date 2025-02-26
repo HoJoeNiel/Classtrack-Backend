@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from app.api import dummy
-from app.api.endpoints import auth_endpoint, class_endpoint, grade_endpoint
+from app.api.endpoints import auth_endpoint, class_endpoint, grade_endpoint, attendance_endpoints
 from app.core.database import Database
 from app.db.repositories.grade_repository import score_trigger, student_score_trigger
 import asyncpg
@@ -38,6 +38,7 @@ app.include_router(dummy.router)
 app.include_router(auth_endpoint.router)
 app.include_router(class_endpoint.router)
 app.include_router(grade_endpoint.router)
+app.include_router(attendance_endpoints.router)
 
 @app.get("/")
 async def root():
