@@ -4,13 +4,10 @@ import app.core.database as db
 from app.db.models.grade_model import AssessmentModel, ScoreList
 
 
-async def insert_assessment_to_db(conn: asyncpg.Connection, class_id: int, type_name: str, new_assessment:AssessmentModel):
+async def insert_assessment_to_db(conn: asyncpg.Connection, class_id: int, grade_type_id: int, new_assessment:AssessmentModel):
     
     new_assessment_dict =  new_assessment.model_dump()
 
-    grade_type_id_record = await conn.fetchrow("SELECT grade_type_id FROM grade_types WHERE type_name = $1", type_name )
-
-    grade_type_id = grade_type_id_record["grade_type_id"] if grade_type_id_record else None 
     
     query = f""" 
         INSERT INTO assessments (class_id, grade_type_id, assessment_name)

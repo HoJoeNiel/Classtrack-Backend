@@ -13,12 +13,12 @@ async def get_grade_types():
     pass
 
 
-@router.post("/api/classes/{class_id}/{type_name}/assessments")
+@router.post("/api/classes/{class_id}/{grade_type_id}/assessments")
 async def insert_assessment(assessment_model: Annotated[AssessmentModel, Body(embed=True)],
                             class_id: int,
-                            type_name:str, 
+                            grade_type_id: int, 
                             conn: asyncpg.Connection = Depends(db.get_connection)):
-    await grade_repository.insert_assessment_to_db(conn, class_id, type_name, assessment_model)
+    await grade_repository.insert_assessment_to_db(conn, class_id, grade_type_id, assessment_model)
 
     return {'message': 'Assessment Successfully Created'}
 
