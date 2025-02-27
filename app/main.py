@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from app.api import dummy
-from app.api.endpoints import auth_endpoint, class_endpoint
+from app.api.endpoints import auth_endpoint, class_endpoint, grade_endpoint
 from app.core.database import Database
 import asyncpg
 
@@ -32,6 +32,7 @@ async def database_exception_handler(request: Request, exc: asyncpg.PostgresErro
 app.include_router(dummy.router)
 app.include_router(auth_endpoint.router)
 app.include_router(class_endpoint.router)
+app.include_router(grade_endpoint.router)
 
 @app.get("/")
 async def root():
