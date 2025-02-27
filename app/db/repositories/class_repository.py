@@ -64,3 +64,4 @@ async def insert_student_to_db(model: Students, conn: asyncpg.Connection):
 
     print(query, new_student_dict.values())
     return await conn.fetchval(query, *new_student_dict.values())
+
