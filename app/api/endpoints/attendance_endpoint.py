@@ -38,10 +38,12 @@ async def get_attendance_records(date_id: int, conn: asyncpg.Connection = Depend
 
 # Update attendance record using record_id 
 # added 'date_id' to avoid argument mismatch as endpoint calls for 'date_id'
-async def update_attendance_record(conn: asyncpg.Connection, date_id: int, record: AttendanceRecord):
-    return await conn.execute("UPDATE attendance_records SET status = $1 WHERE date_id = $2 AND record_id = $3;",record.status, date_id, record.record_id)
+@router.put("api/classes/{date_id}/attendance_records")
+async def update_attendance_record(date_id: int, record: AttendanceRecord, conn: asyncpg.Connection = Depends(db.get_connection)):
+    return await conn.execute("UPDATE attendance_records SET status = $1 WHERE date_id = $2 AND record_id = $3;", record.record_status, date_id, record.record_id)
 
 # Delete attendance record using class_id and student_number
-async def delete_student_from_class(conn: asyncpg.Connection, class_id: int, student_number: int):
+@router.delete("api/classes/{date_id}/attendance_records")
+async def delete_student_from_class(class_id: int, student_number: int, conn: asyncpg.Connection = Depends(db.get_connection)):
     result = await conn.execute("DELETE FROM attendance_records WHERE student_number = $1 AND class_id: $2;",student_number, class_id)
     return result == "DELETE 1"  # Returns True if a record was deleted
