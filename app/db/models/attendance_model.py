@@ -13,9 +13,9 @@ class AttendanceDate(BaseModel):
 
 class AttendanceRecord(BaseModel):
     record_id: int
-    student_number: int
+    student_number: str
     date_id: int
-    status: str
+    record_status: str
 
 class AttendanceRecordsList(BaseModel):
     records: List[AttendanceRecord]

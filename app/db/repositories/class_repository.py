@@ -4,6 +4,7 @@
 import asyncpg
 
 from app.db.models.class_model import ClassModel, Students
+from app.db.repositories.utils import generate_insert_query
 
 
 async def get_classes_from_db(conn: asyncpg.Connection, prof_id: str):
@@ -21,15 +22,17 @@ async def get_class_from_db(conn: asyncpg.Connection, class_id: int):
 async def insert_class_into_db(conn: asyncpg.Connection, new_class: ClassModel):
     """Inserts the a class into db and returns the class_id."""
 
-    new_class_dict = new_class.model_dump()
+    # new_class_dict = new_class.model_dump()
     
-    values = ", ".join(new_class_dict.keys())
-    placeholders = ", ".join(f"${i + 1}" for i in range(len(new_class_dict)))
+    # values = ", ".join(new_class_dict.keys())
+    # placeholders = ", ".join(f"${i + 1}" for i in range(len(new_class_dict)))
 
-    query = f"""
-            INSERT INTO classes ({values}) VALUES ({placeholders}) RETURNING class_id;
-            """
-    
+    # query = f"""
+    #         INSERT INTO classes ({values}) VALUES ({placeholders}) RETURNING class_id;
+    #         """
+
+    new_class_dict = new_class.model_dump()
+    query = generate_insert_query(new_class_dict, "classes", "class_id")
 
     return await conn.fetchval(query, *new_class_dict.values())
 
@@ -44,22 +47,23 @@ async def get_students_from_classes_table(conn: asyncpg.Connection, class_id:int
 
     return await conn.fetch("SELECT * FROM students WHERE class_id = $1;", class_id)
 
-async def insert_student_to_db(model: Students, conn: asyncpg.Connection, class_id:int):
+async def insert_student_to_db(model: Students, conn: asyncpg.Connection):
     """ Insert Students to class according to class_id"""
 
-    #Converts the pydantics model to dictionary
+    # #Converts the pydantics model to dictionary
     new_student_dict = model.model_dump()
 
-    #Makes each column comma seperated
-    values = ", ".join(new_student_dict.keys())
+    # #Makes each column comma seperated
+    # values = ", ".join(new_student_dict.keys())
 
-    #iterates the placeholder to make it ($1, $2),
-    placeholders = ", ".join(f"${i + 1}" for i in range(len(new_student_dict)))
+    # #iterates the placeholder to make it ($1, $2),
+    # placeholders = ", ".join(f"${i + 1}" for i in range(len(new_student_dict)))
 
-    
-    query = f"""
-            INSERT INTO students ({values}) VALUES ({placeholders});
-            """
+    # Using helper function instead of code above
+    query = generate_insert_query(new_student_dict, "students", "class_id")
+
+    print(query, new_student_dict.values())
+    return await conn.fetchval(query, *new_student_dict.values())
 
     return await conn.execute(query, *new_student_dict.values())
 

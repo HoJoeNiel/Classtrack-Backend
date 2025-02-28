@@ -16,7 +16,7 @@ async def get_classes(conn: asyncpg.Connection = Depends(db.get_connection), tok
 
 
 @router.post("/api/classes")
-async def get_class(class_body: ClassModel, conn: asyncpg.Connection = Depends(db.get_connection)):
+async def insert_class(class_body: ClassModel, conn: asyncpg.Connection = Depends(db.get_connection)):
     res = await class_repository.insert_class_into_db(conn, class_body)
     return {"class_id": res}
 
@@ -37,10 +37,7 @@ async def get_class(class_id: int, conn: asyncpg.Connection = Depends(db.get_con
 
     class_data = await class_repository.get_class_from_db(conn, class_id)
 
-    if not class_data:
-        raise HTTPException(status_code=404, detail="Class not found.")
-
-    return {"content":dict(class_data)}
+    return {"content": class_data}
 
 @router.get("/api/classes/{class_id}/students", response_model=Content)
 async def get_students_from_class(class_id: int, conn: asyncpg.Connection = Depends(db.get_connection)):
@@ -57,11 +54,10 @@ async def get_students_from_class(class_id: int, conn: asyncpg.Connection = Depe
     return {"content": students_list}
 
 
-@router.post("/api/classes/{class_id}/students")
-async def insert_student(studentModel: Students, class_id: int, conn: asyncpg.Connection = Depends(db.get_connection)):
+@router.post("/api/students")
+async def insert_student(studentModel: Students, conn: asyncpg.Connection = Depends(db.get_connection)):
 
-    res = await class_repository.insert_student_to_db(studentModel, conn, class_id)
-    return {"message": f"Student successfully added. -> {res}"}
+    await class_repository.insert_student_to_db(studentModel, conn)
 
 # Delete attendance record using class_id and student_number
 @router.delete("/api/classes/{classId}/students/{student_number}")

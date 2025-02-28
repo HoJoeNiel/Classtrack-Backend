@@ -1,9 +1,52 @@
 import asyncpg
+from app.db.models.grade_model import GradeType, AssessmentModel, ScoreList
+from app.db.repositories.utils import generate_insert_query
 from fastapi import Depends, HTTPException
 import app.core.database as db
-from app.db.models.grade_model import AssessmentModel, ScoreList
 
+async def get_grade_types_from_db(class_id: int, conn: asyncpg.Connection):
+    """Fetches all grade_types of a class from db given its id."""
 
+    res = await conn.fetch("SELECT * FROM grade_types WHERE class_id = $1", class_id)
+    return res
+
+async def get_assessments(class_id: int, type_name: str, conn: asyncpg.Connection):
+    """Fetches all assessments of type type_name in a class given its id."""
+
+    # Try to get grade type id
+    res = await get_grade_type_id(class_id, type_name, conn)
+
+    if not res:
+        return None
+
+    id = dict(res)["grade_type_id"] 
+    assessments = await conn.fetch("SELECT * FROM assessments WHERE class_id = $1 AND grade_type_id = $2", class_id, id)
+    
+    return assessments
+    
+    
+async def get_grade_type_id(class_id: int, type_name: str, conn: asyncpg.Connection):
+    """Fetches the id of a grade type from a class."""
+
+    id = await conn.fetchrow("SELECT grade_type_id FROM grade_types WHERE LOWER(type_name) = LOWER($1) AND class_id = $2;", type_name, class_id)
+    return id
+  
+
+async def insertDB_grade_type(grade_type: GradeType, conn):
+    """Inserts a grade type in the db. The class_id is included in the request body."""
+
+    grade_type_dict = grade_type.model_dump()
+
+    query = generate_insert_query(grade_type_dict, "grade_types", "grade_type_id")
+
+    return await conn.fetchrow(query, *grade_type_dict.values())
+  
+
+async def deleteDB_grade_type(class_id: int, type_id: int, conn: asyncpg.Connection):
+    """Deletes a grade type given its id on a class."""
+    return await conn.fetchval("DELETE FROM grade_types WHERE class_id = $1 AND grade_type_id = $2 RETURNING grade_type_id", class_id, type_id)
+
+  
 async def insert_assessment_to_db(conn: asyncpg.Connection, class_id: int, grade_type_id: int, new_assessment:AssessmentModel):
     
     new_assessment_dict =  new_assessment.model_dump()
@@ -16,7 +59,6 @@ async def insert_assessment_to_db(conn: asyncpg.Connection, class_id: int, grade
     print(new_assessment_dict['assessment_name'])
 
     return await conn.execute(query, class_id, grade_type_id, new_assessment_dict['assessment_name'])
-
 
 
 async def score_trigger(conn: asyncpg.Connection = Depends(db.get_connection)):
@@ -56,6 +98,7 @@ async def score_trigger(conn: asyncpg.Connection = Depends(db.get_connection)):
         """)
     # await conn.close()
 
+    
 async def student_score_trigger(conn: asyncpg.Connection = Depends(db.get_connection)):
     
     function_exists = await conn.fetchval("""
@@ -100,7 +143,6 @@ async def student_score_trigger(conn: asyncpg.Connection = Depends(db.get_connec
             """)
     
 
-    
 async def delete_assessment_to_db(class_id: int, grade_type_id: int, assessment_id, conn: asyncpg.Connection):
 
     query = """
@@ -108,6 +150,7 @@ async def delete_assessment_to_db(class_id: int, grade_type_id: int, assessment_
     """
 
     return await conn.fetchval(query, class_id, grade_type_id, assessment_id)
+  
 
 async def get_scores_from_db(class_id: int, grade_type_id: int, conn: asyncpg.Connection):
 
@@ -122,6 +165,7 @@ async def get_scores_from_db(class_id: int, grade_type_id: int, conn: asyncpg.Co
     # return assessment_id
     return await conn.fetch(query, assessment_id)
 
+  
 async def update_scores_to_db(class_id: int, model:ScoreList, conn: asyncpg.Connection):
     query = """
         UPDATE scores
