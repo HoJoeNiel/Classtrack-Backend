@@ -59,9 +59,11 @@ async def insert_student(studentModel: Students, conn: asyncpg.Connection = Depe
 
     await class_repository.insert_student_to_db(studentModel, conn)
 
+    return {'message': 'Student successfully added.'}
+
 # Delete attendance record using class_id and student_number
 @router.delete("/api/classes/{classId}/students/{student_number}")
-async def delete_student_from_class(class_id: int, student_number: int, conn: asyncpg.Connection = Depends(db.get_connection)):
+async def delete_student_from_class(class_id: int, student_number: str, conn: asyncpg.Connection = Depends(db.get_connection)):
     result = await class_repository.delete_student_to_db(conn, class_id, student_number)
     return result == "DELETE 1"  # Returns True if a record was deleted
 

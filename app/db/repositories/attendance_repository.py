@@ -48,7 +48,7 @@ async def update_attendance_record(conn: asyncpg.Connection, records: Attendance
 
     try:
         async with conn.transaction():
-            for record in records.record_status:
+            for record in records.records:
                 await conn.execute(query, record.record_status, record.student_number, record.date_id, class_id)
 
     except Exception as e:

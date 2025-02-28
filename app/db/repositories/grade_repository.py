@@ -10,17 +10,9 @@ async def get_grade_types_from_db(class_id: int, conn: asyncpg.Connection):
     res = await conn.fetch("SELECT * FROM grade_types WHERE class_id = $1", class_id)
     return res
 
-async def get_assessments(class_id: int, type_name: str, conn: asyncpg.Connection):
+async def get_assessments(class_id: int, grade_type_id: int, conn: asyncpg.Connection):
     """Fetches all assessments of type type_name in a class given its id."""
-
-    # Try to get grade type id
-    res = await get_grade_type_id(class_id, type_name, conn)
-
-    if not res:
-        return None
-
-    id = dict(res)["grade_type_id"] 
-    assessments = await conn.fetch("SELECT * FROM assessments WHERE class_id = $1 AND grade_type_id = $2", class_id, id)
+    assessments = await conn.fetch("SELECT * FROM assessments WHERE class_id = $1 AND grade_type_id = $2", class_id, grade_type_id)
     
     return assessments
     

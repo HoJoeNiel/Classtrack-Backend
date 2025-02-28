@@ -16,10 +16,10 @@ async def get_grade_types(class_id: int, conn = Depends(db.get_connection)):
 
     return {"content": grade_types}
 
-@router.get("/api/classes/{class_id}/{type_name}/assessments")
-async def get_assessments(class_id: int, type_name: str, conn = Depends(db.get_connection)):
+@router.get("/api/classes/{class_id}/{grade_type_id}/assessments")
+async def get_assessments(class_id: int, grade_type_id: int, conn = Depends(db.get_connection)):
 
-    assessments = await grade_repository.get_assessments(class_id, type_name, conn)
+    assessments = await grade_repository.get_assessments(class_id, grade_type_id, conn)
 
     return {"content": assessments}
 

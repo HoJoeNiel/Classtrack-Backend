@@ -88,8 +88,8 @@ CREATE TABLE IF NOT EXISTS attendance_records (
     student_number TEXT NOT NULL,
     date_id INT NOT NULL,
     record_status TEXT NOT NULL,
-    FOREIGN KEY (student_number) REFERENCES students(student_number),
-    FOREIGN KEY (date_id) REFERENCES attendance_dates(date_id)
+    FOREIGN KEY (student_number) REFERENCES students(student_number) ON DELETE CASCADE,
+    FOREIGN KEY (date_id) REFERENCES attendance_dates(date_id) ON DELETE CASCADE
 );
 
 
