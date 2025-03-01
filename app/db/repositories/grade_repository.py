@@ -43,14 +43,14 @@ async def insert_assessment_to_db(conn: asyncpg.Connection, class_id: int, grade
     
     new_assessment_dict =  new_assessment.model_dump()
 
+    query = """ 
+        INSERT INTO assessments (class_id, grade_type_id, assessment_name, total_items)
+        VALUES ($1, $2, $3, $4)
+        """    
     
-    query = f""" 
-        INSERT INTO assessments (class_id, grade_type_id, assessment_name)
-        VALUES ($1, $2, $3)
-    """    
     print(new_assessment_dict['assessment_name'])
 
-    return await conn.execute(query, class_id, grade_type_id, new_assessment_dict['assessment_name'])
+    return await conn.execute(query, class_id, grade_type_id, new_assessment_dict['assessment_name'], new_assessment_dict["total_items"])
 
 
 async def score_trigger(conn: asyncpg.Connection = Depends(db.get_connection)):
