@@ -5,6 +5,8 @@ classtrack-remake-firebase-adminsdk-90eav-4a63b9014c.json
 db-data
 pgadmin-data
 
+#ngrok
+ngrok.exe
 
 #Firebase 
 firebase_sdk.json

@@ -14,10 +14,14 @@ async def get_classes_from_db(conn: asyncpg.Connection, prof_id: str):
     # Query from the database
     return await conn.fetch("SELECT * FROM classes WHERE prof_id = $1;", prof_id)
 
-async def get_class_from_db(conn: asyncpg.Connection, class_id: int):
+async def get_class_from_db(conn: asyncpg.Connection, class_id: int, prof_id:str):
     """Returns class data from db given class_id."""
+    query = """
+        SELECT * FROM classes WHERE class_id = $1
+        AND class_id IN (SELECT class_id FROM classes WHERE prof_id = $2);
+    """
 
-    return await conn.fetchrow("SELECT * FROM classes WHERE class_id = $1", class_id)
+    return await conn.fetchrow(query, class_id, prof_id)
 
 async def insert_class_into_db(conn: asyncpg.Connection, new_class: ClassModel):
     """Inserts the a class into db and returns the class_id."""

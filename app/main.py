@@ -33,7 +33,7 @@ app = FastAPI(lifespan=lifespan)
 # TO CONNECT OUR BACKEND TO FRONTEND
 app.add_middleware(
 	CORSMiddleware,
-	allow_origins = ["http://localhost:3000"], # React FrontEnd URL
+	allow_origins = ["https://62f0-2405-8d40-444d-8cb2-b0d8-57b0-53c7-32c4.ngrok-free.app", "http://localhost:5173"], # React FrontEnd URL
 	allow_credentials = True, 	
 	allow_methods = ["*"], # Allow all HTTP request (GET, POST, PUT...)
 	allow_headers = ["*"]  # Allow all headers like Authorization
