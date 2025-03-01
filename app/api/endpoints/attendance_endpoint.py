@@ -8,10 +8,12 @@ import app.db.repositories.attendance_repository as attendance_repository
 router = APIRouter()
 
 # Get all attendance dates for a class
-@router.get("/api/classes/{class_id}/attendance_dates")
+@router.get("/attendance/{class_id}/dates")
 async def get_attendance_dates(class_id: int, conn: asyncpg.Connection = Depends(db.get_connection)):
-    res = await attendance_repository.get_attendance_dates(conn, class_id)
-    return {"attendance_dates": res}
+    records = await conn.fetch("SELECT date_id, attendance_date FROM attendance_dates WHERE class_id = $1;", class_id)
+    
+    # Return a flat list of attendance dates
+    return [dict(record) for record in records]
 
 # Add a new attendance date
 @router.post("/api/classes/{class_id}/attendance_dates")
