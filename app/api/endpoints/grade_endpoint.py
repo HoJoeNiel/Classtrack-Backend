@@ -82,6 +82,7 @@ async def get_grades_by_class(class_id: int, conn: asyncpg.Connection = Depends(
             {
                 "name": f"{student['last_name']}, {student['first_name']}",
                 "student_number": student["student_number"],
+                "grades": []
             }
             for student in students
         ]
@@ -100,41 +101,59 @@ async def get_grades_by_class(class_id: int, conn: asyncpg.Connection = Depends(
     except Exception as e:
         print(f"Failed to get grade_types: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to get grade types: {str(e)}")
-    
-    # Get grades per student and per type
-    for student in students:
 
+    
+    # Get all assessments and group them by their grade_type_id
+    try:
+        assessments = await conn.fetch(
+            "SELECT assessment_id, grade_type_id from assessments WHERE class_id = $1",
+            class_id
+        )
+
+        assesments_by_type = {}
+        for assessment in assessments:
+            g_type_id = assessment["grade_type_id"]
+            assesments_by_type.setdefault(g_type_id, []).append(assessment["assessment_id"])
+    
+    except Exception as e:
+        print(f"Failed to get assessments: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to get assessments: {str(e)}")
+
+    # Get all scores and put them in dictionary
+    try:
+        scores = await conn.fetch(
+            "SELECT * FROM scores WHERE assessment_id = ANY($1)",
+            [a["assessment_id"] for a in assessments]
+        )
+
+
+        scores_by_student = {}
+        for score in scores:
+            key = (score["student_number"], score["assessment_id"])
+            scores_by_student[key] = score["score"]
+
+    except Exception as e:
+        print(f"Failed to get scores: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get scores: {str(e)}") 
+
+
+    # Put scores on students
+    for student in students:
+        student_num = student["student_number"]
         grades = []
+
         for g_type in grade_types:
             g_type_id = g_type["grade_type_id"]
+            assessment_ids = assesments_by_type.get(g_type_id, [])
 
-            # Get all assessments with that id
-            assessments = await conn.fetch(
-                "SELECT assessment_id FROM assessments WHERE class_id = $1 AND grade_type_id = $2",
-                class_id,
-                g_type_id
-                )
-            
-            scores = []
-            for assessment in assessments:
-                a_id = assessment["assessment_id"]
-                score = await conn.fetchrow(
-                    "SELECT assessment_id, score from scores WHERE assessment_id = $1 AND student_number = $2",
-                    a_id,
-                    student["student_number"]
-                )
-                if score:
-                    scores.append(dict(score))
-                else:
-                    scores.append({"assessment_Id": a_id, "score": 0})
+            scores_list = [
+                {"assessment_id": a_id, "score": scores_by_student.get((student_num, a_id), 0)}
+                for a_id in assessment_ids
+            ]
 
-            grade = {
-                "type": g_type["type_name"],
-                "scores": scores
-            }
-
-            grades.append(grade)
+            grades.append({"type": g_type["type_name"], "scores": scores_list})
 
         student["grades"] = grades
 
     return students
+  
