@@ -96,26 +96,24 @@ CREATE TABLE IF NOT EXISTS attendance_records (
 
 -- -- INSERTING DUMMY DATA
 
--- INSERT INTO professors (uid, first_name, last_name, email) 
--- 		VALUES ('a21', 'Busa', 'Ku', 'KuBusa69@yahoo.com');
+INSERT INTO professors (uid, first_name, last_name, email) 
+		VALUES ('a21', 'Busa', 'Ku', 'KuBusa69@yahoo.com');
 
--- INSERT INTO classes (class_size, prof_id, schedule, section, subject_name, subject_code)
--- 		VALUES (30, 'a21', '3-4 MTH', 'COM231', 'Spot a gay', 'SPGx01');
+INSERT INTO classes (class_size, prof_id, schedule, section, subject_name, subject_code)
+		VALUES (30, 'a21', '3-4 MTH', 'COM231', 'Spot a gay', 'SPGx01');
 
--- INSERT INTO students (student_number,  class_id, first_name, last_name, course, email)
--- 		VALUES ('2023-103824', 1, 'Luis Ryan', 'Sanisit', 'BSCS-ML', 'ryansanisit19@gmail.com');
+INSERT INTO students (student_number,  class_id, first_name, last_name, course, email, address)
+		VALUES ('2023-103824', 1, 'Luis Ryan', 'Sanisit', 'BSCS-ML', 'ryansanisit19@gmail.com', 'Taguig City');
 
--- INSERT INTO grade_types (class_id, type_name) 
--- 		VALUES (1, 'Quiz');
+INSERT INTO grade_types (class_id, type_name) 
+		VALUES (1, 'Quiz');
 
--- INSERT INTO assessments (class_id, grade_type_id, assessment_name, total_items)
--- 		VALUES (1, 1, 'Quiz 1: Spot a gay', 25);
+INSERT INTO assessments (class_id, grade_type_id, assessment_name, total_items)
+		VALUES (1, 1, 'Quiz 1: Spot a gay', 25);
 
--- INSERT INTO scores(student_number, assessment_id, score)
--- 		VALUES ('2023-103824', 1, 20);
+INSERT INTO scores(student_number, assessment_id, score)
+		VALUES ('2023-103824', 1, 20);
 
--- INSERT INTO attendance_dates (attendance_date, class_id)
--- 		VALUES ('2025-02-25', 1);
+INSERT INTO attendance_dates (attendance_date, class_id)
+		VALUES ('2025-02-25', 1);
 
--- INSERT INTO attendance_dates (attendance_date, class_id)
--- 		VALUES ('2025-02-25', 1);
