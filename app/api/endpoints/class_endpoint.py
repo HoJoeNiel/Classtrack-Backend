@@ -18,8 +18,7 @@ async def get_classes(conn: asyncpg.Connection = Depends(db.get_connection), use
 
 @router.post("/api/classes")
 async def insert_class(class_body: ClassModel, conn: asyncpg.Connection = Depends(db.get_connection), user: dict = Depends(verify_user)):
-    prof_id = user["uid"]
-    res = await class_repository.insert_class_into_db(conn, class_body, prof_id)
+    res = await class_repository.insert_class_into_db(conn, class_body)
     return {"class_id": res}
 
 @router.delete("/api/classes/{class_id}")

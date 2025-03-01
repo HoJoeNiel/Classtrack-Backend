@@ -8,8 +8,8 @@ router = APIRouter()
 async def verify_user(decoded_token: dict = Depends(verify_firebase_token), conn=Depends(get_connection)):
 
     uid = decoded_token["uid"]
-    first_name = decoded_token["first_name"]
-    last_name = decoded_token["last_name"] 
+    first_name = "testing"
+    last_name = "testing"
     email = decoded_token["email"]
     print(decoded_token)
     
@@ -20,7 +20,7 @@ async def verify_user(decoded_token: dict = Depends(verify_firebase_token), conn
         insert_query = "INSERT INTO professors (uid, first_name, last_name, email) VALUES ($1, $2, $3, $4) RETURNING *;"
         user = await conn.fetchrow(insert_query, uid, first_name, last_name, email)
 
-    return {"Message": "User verified", "user_id":user["id"]}
+    return user
 
 @router.get("/test/test-auth")
 async def test_auth(decoded_token: dict = Depends(verify_firebase_token)):
