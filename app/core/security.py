@@ -17,6 +17,7 @@ async def verify_firebase_token(token: str = Security(security)):
         # Attempt to verify the Firebase ID token
         decoded_token = auth.verify_id_token(token.credentials, clock_skew_seconds=10)
         print("Decoded Token:", decoded_token)  # Check the decoded token
+        
         return decoded_token
     except Exception as e:
         # Print error message to debug
