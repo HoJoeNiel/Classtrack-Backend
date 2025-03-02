@@ -1,3 +1,4 @@
+from email.mime import base
 import asyncpg
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
@@ -32,9 +33,10 @@ class Database:
 				print(f"Database initialization failed (attempt {attempt}): {e}")
 
 				if attempt < max_retries:
-					delay = base_delay * (2 ** (attempt - 1))  # Exponential backoff
-					print(f"Retrying in {delay} seconds.")
-					await asyncio.sleep(delay)
+					# Exponential backoff. Max delay of 8 seconds
+					base_delay = min(base_delay * (2 ** (attempt - 1)), 8.0)  
+					print(f"Retrying in {base_delay} seconds.")
+					await asyncio.sleep(base_delay)
 
 				else: # no more retries
 					print("Max retries reached. Could not connect to database.")
