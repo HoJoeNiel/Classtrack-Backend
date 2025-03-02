@@ -160,13 +160,17 @@ async def get_grades_by_class(class_id: int, conn: asyncpg.Connection = Depends(
 @router.get("/api/grade_type/{class_id}")
 async def get_grade_type_by_class(class_id:int, conn: asyncpg.Connection =  Depends(db.get_connection)):
 
+    try:
 
-    grade_type = await grade_repository.get_grade_types_from_db(class_id, conn)
-    grade_types = [
-        {"type": types["type_name"],
-         "assessment": [ await grade_repository.get_assessments(class_id, types["grade_type_id"], conn)]}
-        for types in grade_type
-    ]
+        grade_type = await grade_repository.get_grade_types_from_db(class_id, conn)
+        grade_types = [
+            {"type": types["type_name"],
+            "assessment": [ await grade_repository.get_assessments(class_id, types["grade_type_id"], conn)]}
+            for types in grade_type
+        ]
+        
+        return grade_types
     
-    return grade_types
+    except Exception as e:
+        raise HTTPException(500, f"Failed to fetch grade types with assessment -> {str(e)}")
 
