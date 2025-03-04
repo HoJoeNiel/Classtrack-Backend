@@ -12,19 +12,25 @@ from fastapi.middleware.cors import CORSMiddleware
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+	print("\n\n\n\n")
+	print("Starting the backend...\n")
+
 	# Initialize database
 	await Database.initialize()
-
 	conn = await Database.get_connection()
 	await score_trigger(conn)
 	await student_score_trigger(conn)
 	await students_attendance_trigger(conn)
 	await attendance_record_trigger(conn)
 	await conn.close()
+
+	print("Backend is now running.\n")
 	yield
 
 	# Shutdown
 	await Database.close_all()
+
+	print("Backend shutdown.\n\n\n")
 
 app = FastAPI(lifespan=lifespan)
 
