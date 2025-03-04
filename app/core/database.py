@@ -24,6 +24,8 @@ class Database:
 					database="classtrack",
 					user=user,
 					password=password,
+					host="database",
+					port=5432
 					)
 		
 				print("Database initialized successfully.")
