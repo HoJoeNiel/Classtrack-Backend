@@ -63,7 +63,7 @@ async def get_attendance_records(date_id: int, conn: asyncpg.Connection = Depend
     
 # Update attendance record using record_id 
 # added 'date_id' to avoid argument mismatch as endpoint calls for 'date_id'
-@router.put("/api/classes{class_id}/attendance_records")
+@router.put("/api/classes/{class_id}/attendance_records")
 async def update_attendance_record(class_id: int, record: AttendanceRecordsList, conn: asyncpg.Connection = Depends(db.get_connection)):
     res =  await attendance_repository.update_attendance_record(conn, record, class_id)
     return res
