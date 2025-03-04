@@ -1,4 +1,5 @@
 import asyncpg
+from fastapi import HTTPException
 from app.db.models.attendance_model import AttendanceModel, AttendanceDate, AttendanceRecord, AttendanceRecordsList
 from fastapi import Depends, HTTPException
 import app.core.database as db
@@ -45,14 +46,23 @@ async def insert_attendance_record(conn: asyncpg.Connection, record: AttendanceR
                               record.record_id, record.student_number, record.date_id, record.record_status)
 
 # Update attendance record using record_id 
-async def update_attendance_record(conn: asyncpg.Connection, date_id: int, record: AttendanceRecord):
-    return await conn.execute("UPDATE attendance_records SET status = $1 WHERE date_id = $2 AND record_id = $3;",
-                              record.record_status, date_id, record.record_id)
+# added 'date_id' to avoid argument mismatch as endpoint calls for 'date_id'
+async def update_attendance_record(conn: asyncpg.Connection, records: AttendanceRecordsList, class_id: int):
+    query = """
+        UPDATE attendance_records
+        SET record_status = $1
+        WHERE student_number = $2
+        AND date_id = $3
+        AND date_id IN (SELECT date_id FROM attendance_dates WHERE class_id = $4)
+    """
 
-# Delete attendance record using record_id
-async def delete_student_from_class(conn: asyncpg.Connection, record_id: int):
-    result = await conn.execute("DELETE FROM attendance_records WHERE record_id = $1;", record_id)
-    return result == "DELETE 1"  
+    try:
+        async with conn.transaction():
+            for record in records.records:
+                await conn.execute(query, record.record_status, record.student_number, record.date_id, class_id)
+
+    except Exception as e:
+        raise HTTPException(500, str(e))
 
 # Trigger to set default status to 'absent' when a new attendance date is added
 async def attendance_record_trigger(conn: asyncpg.Connection = Depends(db.get_connection)):
