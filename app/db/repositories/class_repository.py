@@ -33,7 +33,7 @@ async def insert_class_into_db(conn: asyncpg.Connection, new_class: ClassModel):
 
     new_class_dict = new_class.model_dump()
     query = generate_insert_query(new_class_dict, "classes", "class_id")
-
+    print(query)
     return await conn.fetchval(query, *new_class_dict.values())
 
 async def delete_class_from_db(conn: asyncpg.Connection, class_id: int):

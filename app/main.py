@@ -7,6 +7,7 @@ from app.core.database import Database
 from app.db.repositories.grade_repository import score_trigger, student_score_trigger 
 from app.db.repositories.attendance_repository import attendance_record_trigger, students_attendance_trigger
 import asyncpg
+from fastapi.middleware.cors import CORSMiddleware
 
 
 @asynccontextmanager
@@ -27,6 +28,14 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+
+app.add_middleware(
+	CORSMiddleware,
+	allow_origins = ["*"], # React FrontEnd URL
+	allow_credentials = True, 	
+	allow_methods = ["*"], # Allow all HTTP request (GET, POST, PUT...)
+	allow_headers = ["*"]  # Allow all headers like Authorization
+)
 
 # Error handler middlewares
 @app.exception_handler(asyncpg.PostgresError)

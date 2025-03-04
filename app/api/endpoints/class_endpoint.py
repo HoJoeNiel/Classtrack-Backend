@@ -1,5 +1,6 @@
 import asyncpg
 from fastapi import APIRouter, Depends, HTTPException
+from app.api.endpoints.auth_endpoint import verify_user
 import app.core.database as db
 from app.core.security import verify_firebase_token
 from app.db.models.class_model import ClassModel
@@ -11,14 +12,20 @@ router = APIRouter()
 @router.get("/api/classes")
 async def get_classes(conn: asyncpg.Connection = Depends(db.get_connection), token = Depends(verify_firebase_token)):
     prof_id = token["uid"]
+    print(token)
+    print(prof_id)
     res = await class_repository.get_classes_from_db(conn, prof_id)
-    return {"classes": res}
+    return {"data": res}
 
 
 @router.post("/api/classes")
-async def get_class(class_body: ClassModel, conn: asyncpg.Connection = Depends(db.get_connection)):
-    res = await class_repository.insert_class_into_db(conn, class_body)
-    return {"class_id": res}
+async def get_class(class_body: ClassModel, conn: asyncpg.Connection = Depends(db.get_connection), token = Depends(verify_user)):
+    try:
+        res = await class_repository.insert_class_into_db(conn, class_body)
+        print(res)
+        return {"class_id": res}
+    except Exception as e:
+        print(f"Failed to insert to db: {e}")
 
 @router.delete("/api/classes/{class_id}")
 async def delete_class(class_id: int, conn: asyncpg.Connection = Depends(db.get_connection)):
@@ -60,7 +67,7 @@ async def get_students_from_class(class_id: int, conn: asyncpg.Connection = Depe
 @router.post("/api/classes/{class_id}/students")
 async def insert_student(studentModel: Students, class_id: int, conn: asyncpg.Connection = Depends(db.get_connection)):
 
-    res = await class_repository.insert_student_to_db(studentModel, conn, class_id)
+    res = await class_repository.insert_student_to_db(studentModel, conn)
 
     return {"message": f"Student successfully added."}
 
