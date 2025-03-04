@@ -26,8 +26,18 @@ async def delete_attendance_date(conn: asyncpg.Connection, class_id: int, dates_
 
 # Get all attendance records for a class
 async def get_attendance_records(conn: asyncpg.Connection, date_id: int):
-    records = await conn.fetch("SELECT * FROM attendance_records WHERE date_id = $1;", date_id)
-    return AttendanceRecordsList(records=[AttendanceRecord(**dict(record)) for record in records])
+    query = """
+        SELECT s.student_number, 
+               s.first_name || ', ' || s.last_name AS name, 
+               ar.record_id, 
+               ar.date_id, 
+               COALESCE(ar.record_status, 'not recorded') AS record_status
+        FROM students s
+        LEFT JOIN attendance_records ar 
+        ON s.student_number = ar.student_number AND ar.date_id = $1
+        WHERE s.class_id = (SELECT class_id FROM attendance_dates WHERE date_id = $1);
+    """
+    return await conn.fetch(query, date_id)
 
 # Insert a new attendance record
 async def insert_attendance_record(conn: asyncpg.Connection, record: AttendanceRecord):

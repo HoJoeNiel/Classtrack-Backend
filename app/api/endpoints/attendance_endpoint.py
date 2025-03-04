@@ -8,10 +8,12 @@ import app.db.repositories.attendance_repository as attendance_repository
 router = APIRouter()
 
 # Get all attendance dates for a class
-@router.get("/api/classes/{class_id}/attendance_dates")
+@router.get("/attendance/{class_id}/dates")
 async def get_attendance_dates(class_id: int, conn: asyncpg.Connection = Depends(db.get_connection)):
-    res = await attendance_repository.get_attendance_dates(conn, class_id)
-    return {"attendance_dates": res}
+    records = await conn.fetch("SELECT date_id, attendance_date FROM attendance_dates WHERE class_id = $1;", class_id)
+    
+    # Return a flat list of attendance dates
+    return [dict(record) for record in records]
 
 # Add a new attendance date
 @router.post("/api/classes/{class_id}/attendance_dates")
@@ -30,12 +32,35 @@ async def delete_attendance_date(class_id: int, dates_id: int, conn: asyncpg.Con
     await attendance_repository.delete_attendance_date(conn, class_id, dates_id)
     return {"attendance_date": date_data}
 
-# Get attendance records
+# Get attendance records for a specific date in a class
 @router.get("/api/classes/{date_id}/attendance_records")
 async def get_attendance_records(date_id: int, conn: asyncpg.Connection = Depends(db.get_connection)):
-    res: AttendanceRecordsList = await attendance_repository.get_attendance_records(conn, date_id) 
-    return res.model_dump()
+    records = await attendance_repository.get_attendance_records(conn, date_id)
 
+    students = {}  # Dictionary to store student records
+
+    for record in records:
+        student_number = record["student_number"]
+
+        if student_number not in students:
+            students[student_number] = {
+                "name": record["name"],
+                "studentNumber": student_number,
+                "records": []
+            }
+
+        students[student_number]["records"].append({
+            "record_id": record["record_id"],
+            "date_id": record["date_id"],
+            "record_status": record["record_status"]
+        })
+
+    # Sort each student's records by date_id
+    for student in students.values():
+        student["records"].sort(key=lambda r: r["date_id"])
+
+    return list(students.values()) if len(students) != 1 else next(iter(students.values()))
+    
 # Update attendance record using record_id 
 # added 'date_id' to avoid argument mismatch as endpoint calls for 'date_id'
 @router.put("/api/classes{class_id}/attendance_records")
